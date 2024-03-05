@@ -15,6 +15,7 @@ int main(void)
     if (useExample)
     {
         // TODO: implement example gantt
+        // test comment
     }
     else
     {
