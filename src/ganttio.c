@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include "logging.h"
-#include "_data.h"
+#include "../include/logging.h"
+#include "../include/_data.h"
 
 int fngets(char *dest, int length)
 {

@@ -1,19 +1,30 @@
-CC = gcc
-CFLAGS = -g -Wall
-OBJDIR = obj
-SRCDIR = src
+# Based on this StackOverflow answer: https://stackoverflow.com/a/30602701/16396198
+SRC_DIR := src
+OBJ_DIR := obj
+BIN_DIR := bin
 
-OBJECTS = $(addprefix $(OBJDIR)/, main.o logging.o ganttio.o)
-SHARED_HEADERS = $(addprefix $(SRCDIR)/, _data.h, ganttio.h, logging.h)
+OUT := $(BIN_DIR)/gantt
+SRC := $(wildcard $(SRC_DIR)/*.c)
+OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-default: main
+# https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html
+CPPFLAGS := -Iinclude -MMD -MP
+CFLAGS := -g -Wall
 
-main: $(OBJECTS)
-	$(CC) $(CFLAGS) -o bin/gantt $(OBJECTS)
+.PHONY: all clean echo
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.c $(HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
+all: $(OUT)
 
-.PHONY: clean
+$(OUT): $(OBJ) | $(BIN_DIR)
+	$(CC) $^ -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+$(BIN_DIR) $(OBJ_DIR):
+	mkdir -p $@
+
 clean:
-	$(RM) gantt $(OBJECTS)
+	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
+
+-include $(OBJ:.o=.d)

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "ganttio.h"
-#include "logging.h"
-#include "_data.h"
+#include "../include/ganttio.h"
+#include "../include/logging.h"
+#include "../include/_data.h"
 
 int main(void)
 {
