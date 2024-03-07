@@ -3,6 +3,7 @@
 #include "ganttio.h"
 #include "logging.h"
 #include "_data.h"
+#include "displayGant.h"
 
 int main(void)
 {
@@ -14,7 +15,21 @@ int main(void)
 
     if (useExample)
     {
-        // TODO: implement example gantt
+        // Creating an array of 10 tasks
+        Task tasks[10] = {
+            {"Demolition", january, february, 0, {}},
+            {"Foundation Work", february, march, 0, {}},
+            {"Structural Renovation", march, may, 1, {foundation_work}},
+            {"Electrical Wiring", april, june, 2, {plumbing_installation, structural_renovation}},
+            {"Plumbing Installation", may, july, 1, {structural_renovation}},
+            {"Insulation", june, august, 1, {electrical_wiring}},
+            {"Drywall Installation", july, september, 2, {electrical_wiring, insulation}},
+            {"Painting", august, october, 2, {drywall_installation, painting}},
+            {"Flooring Installation", september, november, 0, {}},
+            {"Final Touches", october, december, 3, {painting, flooring_installation, drywall_installation}}};
+        
+        // implement example gantt
+        displayGant(tasks, num_tasks);
         // test comment
     }
     else
@@ -30,6 +45,8 @@ int main(void)
         {
             getTask(tasks + i);
         }
+
+        displayGant(tasks, num_tasks);
     }
 
     return 0;
