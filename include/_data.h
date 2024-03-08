@@ -8,13 +8,15 @@
 #ifndef DATA_H
 #define DATA_H
 
+// #define DEBUG
+
 typedef struct task
 {
     char name[80];
-    int startMonth;
-    int endMonth;
-    int numDependencies;
-    int dependencies[9];
+    long startMonth;
+    long endMonth;
+    long numDependencies;
+    long dependencies[9];
 } Task;
 
 #endif

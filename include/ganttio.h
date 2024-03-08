@@ -16,4 +16,9 @@ bool getYesOrNo(void);
 
 void getTask(Task *task);
 
+void taskCopy(Task *dest, Task *src);
+
+void displayGantt(Task tasks[10], int num_tasks);
+long getNum();
+
 #endif
