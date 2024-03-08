@@ -16,4 +16,8 @@ bool getYesOrNo(void);
 
 void getTask(Task *task);
 
+void editTask(Task *task);
+
+void displayGant(struct task tasks[], int num_tasks);
+
 #endif
