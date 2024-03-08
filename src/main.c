@@ -4,20 +4,24 @@
 #include "../include/ganttio.h"
 #include "../include/logging.h"
 #include "../include/_data.h"
+#include "../include/deps.h"
 
 int main(void)
 {
     bool useExample = false;
-    Task tasks[10];
-    int num_tasks;
+    Task gantt[10];
+    long num_tasks;
+
     printf("Would you like to view an example Gantt? (y for yes, n or ENTER to make your own)\n");
     useExample = getYesOrNo();
     bool editGantt = false;
 
     if (useExample)
     {
+        long numExampleTasks = 6;
+    
         // Creating an array of 10 tasks
-        Task tasks[10] = {
+        Task exampleGantt[10] = {
             {"Purchase Material", 1, 5, 0, {}},
             {"Sketch Drawings", 2, 4, 0, {1}},
             {"Stretch Canvas", 3, 5, 2, {1, 2}},
@@ -29,8 +33,15 @@ int main(void)
             {"Feedback Sessions", 9, 11, 1, {8}},
             {"Project Completion", 10, 12, 1, {9}}};
 
+            num_tasks = numExampleTasks;
+
+        for (size_t i = 0; i < numExampleTasks; i++)
+        {
+            taskCopy(&gantt[i], &exampleGantt[i]);
+        }
+
         // Display Sample Gantt
-        displayGant(tasks, 10);
+        displayGant(exampleGantt, 10);
 
         // Ask user if they want to edit the Gantt chart
         printf("If you wish to edit the Gantt type (y for yes, n or ENTER for no)\n");
@@ -51,10 +62,10 @@ int main(void)
                 for (int j = 0; j < 10; j++)
                 {
                     // Compare the entered task name with the names of existing tasks
-                    if (strcmp(tasks[j].name, newTask) == 0)
+                    if (strcmp(exampleGantt[j].name, newTask) == 0)
                     {
-                        editTask(tasks + j); // Edit the relevant task
-                        displayGant(tasks, 10);
+                        editTask(exampleGantt + j); // Edit the relevant task
+                        displayGant(exampleGantt, 10);
                         edited = true; // Set the Flag to true
                         break;
                     }
@@ -77,23 +88,26 @@ int main(void)
             }
         }
     }
-
     else
     {
         printf("How many tasks would you like to enter?\n");
 
         do
         {
-            scanf("%d", &num_tasks);
+            getNum(&num_tasks);
         } while (num_tasks < 1 && num_tasks > 10);
 
-        for (int i = 0; i < num_tasks; i++)
+        for (size_t i = 0; i < num_tasks; i++)
         {
-            getTask(tasks + i);
+            getTask(gantt + i);
         }
-
-        displayGant(tasks, num_tasks);
     }
+
+    displayGantt(gantt, num_tasks);
+
+    long path[10];
+    int circ = checkCircularDeps(gantt, num_tasks - 1, path, 0);
+    printf("%d\n", circ);
 
     return 0;
 }

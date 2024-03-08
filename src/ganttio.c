@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <errno.h>
 #include "../include/logging.h"
 #include "../include/_data.h"
 
@@ -52,6 +54,52 @@ int fngets(char *dest, int length)
     }
 }
 
+// function re-used from https://sekrit.de/webdocs/c/beginners-guide-away-from-scanf.html
+// I emailed Abey and he said it was okay as long as I cited the source
+int getNum(long *dest)
+{
+    long result;
+    char inputBuffer[1024]; // use 1KiB just to be sure
+    int valid;              // flag for successful conversion
+
+    do
+    {
+        if (fngets(inputBuffer, 1024) == 1)
+        {
+            // reading input failed:
+            return 1;
+        }
+
+        char *endptr;
+
+        errno = 0; // reset error number
+        result = strtol(inputBuffer, &endptr, 10);
+        if (errno == ERANGE)
+        {
+            printf("Sorry, this number is too small or too large.\n");
+            valid = 0;
+        }
+        else if (endptr == inputBuffer)
+        {
+            // no character was read
+            valid = 0;
+        }
+        else if (*endptr && *endptr != '\n')
+        {
+            // *endptr is neither end of string nor newline,
+            // so we didn't convert the *whole* input
+            valid = 0;
+        }
+        else
+        {
+            valid = 1;
+        }
+    } while (!valid); // repeat until we got a valid number
+
+    *dest = result;
+    return 0;
+}
+
 bool getYesOrNo(void)
 {
     char yesOrNo[2];
@@ -76,25 +124,42 @@ bool getYesOrNo(void)
 void getTask(Task *task)
 {
     // TODO: Error handling for basically all of this lol
-
     printf("What is the name of your task?\n");
     fngets(task->name, 80);
 
     printf("\nWhat month does this task start? (1-12)\n");
-    scanf("%d", &(task->startMonth));
+    getNum(&(task->startMonth));
 
     printf("\nWhat month does this task end? (1-12)\n");
-    scanf("%d", &(task->endMonth));
+    getNum(&(task->endMonth));
 
     printf("\nHow many dependencies does this task have?\n");
-    scanf("%d", &(task->numDependencies));
+    getNum(&(task->numDependencies));
 
-    for (int i = 0; i < task->numDependencies; i++)
+    for (size_t i = 0; i < task->numDependencies; i++)
     {
         printf("Enter a dependent task: \n");
-        scanf("%d", &(task->dependencies[i]));
+        long temp;
+        getNum(&temp);
+        task->dependencies[i] = temp - 1;
     }
 }
+
+void taskCopy(Task *dest, Task *src)
+{
+    strcpy(dest->name, src->name);
+    dest->startMonth = src->startMonth;
+    dest->endMonth = src->endMonth;
+    dest->numDependencies = src->numDependencies;
+
+    for (size_t i = 0; i < dest->numDependencies; i++)
+    {
+        *(dest->dependencies + i) = *(src->dependencies + i);
+    }
+}
+
+// TODO @blessed: replace with actual display function (this is merely for debugging purposes)
+
 void editTask(Task *task)
 {
     
