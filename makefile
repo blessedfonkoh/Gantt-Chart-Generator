@@ -11,7 +11,7 @@ OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 CPPFLAGS := -Iinclude -MMD -MP
 CFLAGS := -g -Wall
 
-.PHONY: all clean echo
+.PHONY: all clean
 
 all: $(OUT)
 
