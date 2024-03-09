@@ -12,13 +12,12 @@
 
 typedef struct task
 {
-    char name[80];
+    char name[30];
     long startMonth;
     long endMonth;
     long numDependencies;
     long dependencies[9];
 } Task;
-
 
 enum month
 {

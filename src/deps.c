@@ -22,10 +22,10 @@ int checkCircularDeps(Task tasks[10], long taskID, long path[10], int depth)
     {
         if (path[i] == taskID)
         {
-            warn("Circular dependency found:- ");
+            printLog('w', "Circular dependency found:- ");
 
             printDeps(path, depth);
-            printf("%ld\n", taskID + 1);
+            printf("%ld\n\n", taskID + 1);
 
             return 1;
         }
@@ -47,11 +47,7 @@ int checkCircularDeps(Task tasks[10], long taskID, long path[10], int depth)
 
 static void printDeps(long path[10], int depth)
 {
-    if (depth > 0)
-    {
-        printf("%ld -> ", path[0] + 1);
-    }
-    for (size_t i = 1; i < depth; i++)
+    for (size_t i = 0; i < depth; i++)
     {
         printf("%ld -> ", path[i] + 1);
     }
