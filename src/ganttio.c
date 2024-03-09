@@ -27,7 +27,7 @@ int fngets(char *dest, int length)
         if (lineFeed == NULL)
         {
             // Warn the user
-            warn("Your input has exceeded the maximum length of %d. Please try again.\n\n", length - 1);
+            printLog('w', "Your input has exceeded the maximum length of %d. Please try again.\n\n", length - 1);
 
             // Flush stdin by fgets-ing until we find the newline
             while (!strchr(inputBuffer, '\n'))
@@ -59,15 +59,14 @@ int fngets(char *dest, int length)
 int getNum(long *dest)
 {
     long result;
-    char inputBuffer[1024]; // use 1KiB just to be sure
-    int valid;              // flag for successful conversion
+    char inputBuffer[12]; // use 1KiB just to be sure
+    int valid;            // flag for successful conversion
 
     do
     {
-        if (fngets(inputBuffer, 1024) == 1)
+        while (fngets(inputBuffer, 12) == 1)
         {
-            // reading input failed:
-            return 1;
+            continue;
         }
 
         char *endptr;
@@ -121,16 +120,39 @@ bool getYesOrNo(void)
     }
 }
 
-void getTask(Task *task)
+void taskCopy(Task *dest, Task *src)
 {
-    // TODO: Error handling for basically all of this lol
-    printf("What is the name of your task?\n");
-    fngets(task->name, 80);
+    strcpy(dest->name, src->name);
+    dest->startMonth = src->startMonth;
+    dest->endMonth = src->endMonth;
+    dest->numDependencies = src->numDependencies;
+
+    for (size_t i = 0; i < dest->numDependencies; i++)
+    {
+        *(dest->dependencies + i) = *(src->dependencies + i);
+    }
+}
+
+void getTask(Task *task, char mode)
+{
+    switch (mode)
+    {
+    case 'a':
+        printf("What is the name of your task?\n");
+
+    case 'e':
+        printf("Please enter the new name for your task.\n");
+    }
+
+    while (fngets(task->name, 30) == 1)
+    {
+        continue;
+    }
 
     printf("\nWhat month does this task start? (1-12)\n");
     getNum(&(task->startMonth));
 
-    printf("\nWhat month does this task end? (1-12)\n");
+    printf("What month does this task end? (1-12)\n");
     getNum(&(task->endMonth));
 
     printf("\nHow many dependencies does this task have?\n");
@@ -145,52 +167,68 @@ void getTask(Task *task)
     }
 }
 
-void taskCopy(Task *dest, Task *src)
+void editTask(Task tasks[10])
 {
-    strcpy(dest->name, src->name);
-    dest->startMonth = src->startMonth;
-    dest->endMonth = src->endMonth;
-    dest->numDependencies = src->numDependencies;
+    char newTask[30];
 
-    for (size_t i = 0; i < dest->numDependencies; i++)
+    printf("\nPlease enter the exact name of the task you want to edit, or leave blank to cancel:\n");
+    // outer loop for error checking
+    for (int i = 0; i < 1; i++)
     {
-        *(dest->dependencies + i) = *(src->dependencies + i);
+        // Prompt user to enter the exact name of the task they want to edit
+
+        if (fngets(newTask, 30) == 1)
+        {
+            break;
+        }
+
+        bool edited = false; // Flag to check if anything has been edited
+
+        for (int j = 0; j < 10; j++)
+        {
+            // Compare the entered task name with the names of existing tasks
+            if (strcmp(tasks[j].name, newTask) == 0)
+            {
+                getTask(&tasks[j], 'e'); // Edit the relevant task
+                edited = true;           // Set the Flag to true
+                break;
+            }
+        }
+
+        if (edited == false)
+        {
+            // Error message if the task could not be found
+            printf("Error task could not be found. Please enter the exact task name!\n");
+            i--;
+        }
     }
 }
 
-// TODO @blessed: replace with actual display function (this is merely for debugging purposes)
-
-void editTask(Task *task)
+void displayGantt(Task tasks[10], int num_tasks)
 {
-    
-    printf("Please enter the new task name or its current one\n");
-    fngets(task->name, 80);
+    // #ifdef WIN32
+    //     system("cls");
+    // #else
+    //     system("clear");
+    // #endif
 
-    printf("\nWhat month does this task start? (1-12)\n");
-    scanf("%d", &(task->startMonth));
+    // https://stackoverflow.com/questions/66927511/what-does-e-do-what-does-e11h-e2j-do
+    // \e[1;1H: move the cursor to line 1, column 1
+    // \e[2J: Move all the text currently on screen into the scrollback buffer
+    // the system clear commands print both of these and also \e[3J, which clears the scrollback
+    // buffer as well. this might be disruptive from an end-user perspective, as they might not
+    // expect to lose all the text in their terminal. therefore, this app prints the ANSI escape
+    // sequences separately instead of using system commands
+    // printf("\e[1;1H\e[2J");
+    printf("\e[1;1H\e[2J");
 
-    printf("\nWhat month does this task end? (1-12)\n");
-    scanf("%d", &(task->endMonth));
-
-    printf("\nHow many dependencies does this task have?\n");
-    scanf("%d", &(task->numDependencies));
-
-    for (int i = 0; i < task->numDependencies; i++)
-    {
-        printf("Enter a dependent task: \n");
-        scanf("%d", &(task->dependencies[i]));
-    }
-}
-
-void displayGant(struct task tasks[], int num_tasks)
-{
     // print out top border
-    for (int i = 0; i < 176; i++)
+    for (int i = 0; i < 180; i++)
     {
         printf("-");
     }
 
-    printf("\n\t\t\t      |");
+    printf("\n\t\t\t          |");
 
     // Enum's like Arrays start at 0
     enum month month;
@@ -247,7 +285,7 @@ void displayGant(struct task tasks[], int num_tasks)
     printf("\n");
 
     // print out bottom border
-    for (int i = 0; i < 176; i++)
+    for (int i = 0; i < 180; i++)
     {
         printf("-");
     }
@@ -255,22 +293,21 @@ void displayGant(struct task tasks[], int num_tasks)
 
     for (int i = 0; i < num_tasks; i++)
     { // print each task name on a line
-        printf("%-30s|", tasks[i].name);
+        printf("%2d. %-30s|", i + 1, tasks[i].name);
 
         for (int currentMonth = 1; currentMonth < 14; currentMonth++)
         {
 
             if ((currentMonth >= tasks[i].startMonth) && (currentMonth <= tasks[i].endMonth))
             {
-                printf("\e[38;5;93m███████████\e[0m%s", ""); //print with purple accents
+                printf("\e[38;5;93m███████████\e[0m"); // print with purple accents
             }
             else if (currentMonth == 13)
             {
                 for (int j = 0; j < tasks[i].numDependencies; j++)
                 {
-                    printf("%d ", tasks[i].dependencies[j]);
+                    printf("%ld ", tasks[i].dependencies[j] + 1);
                 }
-                
             }
             else
             {
@@ -279,10 +316,23 @@ void displayGant(struct task tasks[], int num_tasks)
         }
 
         printf("\n");
-        for (int i = 0; i < 176; i++)
+        for (int i = 0; i < 180; i++)
         {
             printf("-");
         }
         printf("\n");
     }
+}
+
+char menu()
+{
+    char cmd[5];
+    printf("To edit the Gantt chart, type 'edit' / To test for circular dependencies, type 'test' / To exit type 'quit' / Press <ENTER> to confirm");
+
+    while (fngets(cmd, 5) == 1 || (strcmp(cmd, "edit") != 0 && strcmp(cmd, "test") == 0 && strcmp(cmd, "quit") == 0))
+    {
+        printf("Please enter a valid input");
+    }
+
+    return cmd[0];
 }

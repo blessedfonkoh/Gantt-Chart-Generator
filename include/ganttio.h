@@ -14,15 +14,16 @@ int fngets(char *dest, int length);
 // Prompts the user for a yes/no answer until they provide a valid repsonse
 bool getYesOrNo(void);
 
-void getTask(Task *task);
+void getTask(Task *task, char mode);
 
 void taskCopy(Task *dest, Task *src);
 
 void displayGantt(Task tasks[10], int num_tasks);
-long getNum();
 
-void editTask(Task *task);
+int getNum(long *dest);
 
-void displayGant(struct task tasks[], int num_tasks);
+void editTask(Task tasks[10]);
+
+char menu();
 
 #endif
