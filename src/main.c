@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <string.h>
 #include "../include/ganttio.h"
 #include "../include/logging.h"
 #include "../include/_data.h"
 #include "../include/deps.h"
+#include "../include/colors.h"
 
 int main(void)
 {
@@ -19,16 +19,16 @@ int main(void)
     {
         num_tasks = 10;
         Task exampleGantt[10] = {
-            {"Purchase Material", 1, 5, 0, {}},
-            {"Sketch Drawings", 2, 4, 0, {0}},
-            {"Stretch Canvas", 3, 5, 2, {0, 1}},
-            {"Painting", 4, 7, 2, {0, 2}},
-            {"Drying", 5, 6, 1, {3}},
-            {"Frame Canvas", 6, 9, 2, {0, 4}},
-            {"Gallery Exhibit", 7, 10, 3, {0, 2, 4}},
-            {"Review Exhibit", 6, 10, 1, {6}},
-            {"Feedback Sessions", 9, 11, 1, {7}},
-            {"Project Completion", 10, 12, 1, {8}}};
+            {"Purchase Material", 1, 5, 0, teal, {}},
+            {"Sketch Drawings", 2, 4, 0, crimson, {0}},
+            {"Stretch Canvas", 3, 5, 2, gold, {0, 1}},
+            {"Painting", 4, 7, 2, blue, {0, 2}},
+            {"Drying", 5, 6, 1, pink, {3}},
+            {"Frame Canvas", 6, 9, 2, violet, {0, 4}},
+            {"Gallery Exhibit", 7, 10, 3, purple, {0, 2, 4}},
+            {"Review Exhibit", 6, 10, 1, yellow, {6}},
+            {"Feedback Sessions", 9, 11, 1, lavender, {7}},
+            {"Project Completion", 10, 12, 1, mint, {8}}};
 
         for (size_t i = 0; i < num_tasks; i++)
         {
@@ -42,7 +42,7 @@ int main(void)
         do
         {
             getNum(&num_tasks);
-        } while (num_tasks < 1 && num_tasks > 10);
+        } while (num_tasks < 1 || num_tasks > 10);
 
         for (size_t i = 0; i < num_tasks; i++)
         {
@@ -61,18 +61,21 @@ int main(void)
             return 0;
         // TEST
         case 't':
-            long path[10];
-            int circ = checkCircularDeps(gantt, num_tasks - 1, path, 0);
-
-            if (circ == 0)
             {
-                printLog('s', "No circular dependencies found!\n\n");
+                long path[10];
+                int circ = checkCircularDeps(gantt, num_tasks - 1, path, 0);
+
+                if (circ == 0)
+                {
+                    printLog('s', "No circular dependencies found!\n\n");
+                }
+                break;
             }
-            break;
         // EDIT
         case 'e':
             editTask(gantt);
             displayGantt(gantt, num_tasks);
+            break;
         }
     }
 }

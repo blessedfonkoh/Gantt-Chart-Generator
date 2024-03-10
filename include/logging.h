@@ -6,4 +6,5 @@
 // resolve
 void printLog(char mode, char *fmt, ...);
 
+void cprintf(int color, char *fmt, ...);
 #endif
