@@ -6,6 +6,19 @@ with colored accents.*/
 
 // ANSI Escape Sequences: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
+void cprintf(int color, char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    printf("\e[38;5;%dm", color);
+
+    vprintf(fmt, args);
+    va_end(args);
+
+    printf("\e[0m");
+}
+
 void printLog(char mode, char *fmt, ...)
 {
     va_list args;
@@ -23,15 +36,20 @@ void printLog(char mode, char *fmt, ...)
         // basically, it tells the terminal emulator to start displaying text
         // with color 214 (i.e. orange) as the font color
         // \e[0m resets the terminal to the original font colors
-        printf("\n\e[38;5;214mWARNING:\e[0m ");
+        cprintf(214, "\nWARNING: ");
         break;
     // INFO
     case 'i':
         // color 75 is light blue
-        printf("\n\e[38;5;75mINFO:\e[0m ");
+        cprintf(75, "\nINFO: ");
+        break;
     // SUCCESS
     case 's':
-        printf("\n\e[38;5;34mSUCCESS:\e[0m ");
+        cprintf(34, "\nSUCCESS: ");
+        break;
+    case 'e':
+        cprintf(160, "\nERROR: ");
+        break;
     }
 
     // vprintf is a function in the printf family which, instead of taking a
@@ -41,4 +59,4 @@ void printLog(char mode, char *fmt, ...)
 
     // tell C that we're done reading the variable arguments
     va_end(args);
-}
+}    
