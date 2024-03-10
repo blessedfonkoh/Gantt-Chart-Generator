@@ -5,6 +5,7 @@
 #include <errno.h>
 #include "../include/logging.h"
 #include "../include/_data.h"
+#include "../include/colors.h"
 
 int fngets(char *dest, int length)
 {
@@ -126,6 +127,7 @@ void taskCopy(Task *dest, Task *src)
     dest->startMonth = src->startMonth;
     dest->endMonth = src->endMonth;
     dest->numDependencies = src->numDependencies;
+    dest->colorCode = src->colorCode;
 
     for (size_t i = 0; i < dest->numDependencies; i++)
     {
@@ -138,10 +140,12 @@ void getTask(Task *task, char mode)
     switch (mode)
     {
     case 'a':
-        printf("What is the name of your task?\n");
+        printf("\nWhat is the name of your task?\n");
+        break;
 
     case 'e':
-        printf("Please enter the new name for your task.\n");
+        printf("\nPlease enter the new name for your task.\n");
+        break;
     }
 
     while (fngets(task->name, 30) == 1)
@@ -164,6 +168,11 @@ void getTask(Task *task, char mode)
         long temp;
         getNum(&temp);
         task->dependencies[i] = temp - 1;
+    }
+
+    if (mode == 'a')
+    {
+        task->colorCode = (int)palette();
     }
 }
 
@@ -198,7 +207,7 @@ void editTask(Task tasks[10])
         if (edited == false)
         {
             // Error message if the task could not be found
-            printf("Error task could not be found. Please enter the exact task name!\n");
+            printLog('e', "That task doesn't seem to exist. Are you sure you have the exact name?\n\n");
             i--;
         }
     }
@@ -300,7 +309,8 @@ void displayGantt(Task tasks[10], int num_tasks)
 
             if ((currentMonth >= tasks[i].startMonth) && (currentMonth <= tasks[i].endMonth))
             {
-                printf("\e[38;5;93m███████████\e[0m"); // print with purple accents
+                //cprintf(93, "███████████"); // print with purple accents
+                cprintf(tasks[i].colorCode, "███████████");
             }
             else if (currentMonth == 13)
             {
@@ -326,13 +336,10 @@ void displayGantt(Task tasks[10], int num_tasks)
 
 char menu()
 {
-    char cmd[5];
-    printf("To edit the Gantt chart, type 'edit' / To test for circular dependencies, type 'test' / To exit type 'quit' / Press <ENTER> to confirm");
-
-    while (fngets(cmd, 5) == 1 || (strcmp(cmd, "edit") != 0 && strcmp(cmd, "test") == 0 && strcmp(cmd, "quit") == 0))
-    {
-        printf("Please enter a valid input");
-    }
-
+    char cmd[128];
+    do {
+        printf("To edit the Gantt chart, type 'edit' / To test for circular dependencies, type 'test' / To exit type 'quit' / Press <ENTER> to confirm");
+    } while (fngets(cmd, 128) == 1 || strlen(cmd) != 4  || !(strcmp("edit", cmd) == 0 || strcmp("test", cmd) == 0 || strcmp("quit", cmd) == 0));
+    
     return cmd[0];
 }

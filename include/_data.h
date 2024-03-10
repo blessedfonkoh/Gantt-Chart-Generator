@@ -16,6 +16,7 @@ typedef struct task
     long startMonth;
     long endMonth;
     long numDependencies;
+    int colorCode;
     long dependencies[9];
 } Task;
 
