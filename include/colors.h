@@ -1,6 +1,7 @@
 #ifndef COLORS_H
 #define COLORS_H
 
+// ANSI escape sequences for colors
 typedef enum colors {
     teal = 30,
     blue = 26,

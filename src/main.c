@@ -12,7 +12,7 @@ int main(void)
     Task gantt[10];
     long num_tasks;
 
-    printf("Would you like to view an example Gantt? (y for yes, n or ENTER to make your own)\n");
+    printf("Would you like to view an example Gantt? (y for yes, n to make your own)\n");
     useExample = getYesOrNo();
 
     if (useExample)
