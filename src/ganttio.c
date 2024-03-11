@@ -301,6 +301,7 @@ void displayGantt(Task tasks[10], int num_tasks)
         * and checks the corresponding tasks start month and end month 
         * and prints coloured blocks within that range.
         * if the 'currentMonth' is equal to 13, the dependencies for that task are printed in place.
+        * if none of these conditions are satified, an empty block is printed in place.
         */
         for (int currentMonth = 1; currentMonth < 14; currentMonth++)
         {
