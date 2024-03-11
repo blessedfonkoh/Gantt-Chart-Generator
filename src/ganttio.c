@@ -230,7 +230,7 @@ void displayGantt(Task tasks[10], int num_tasks)
 
     printf("\n\t\t\t          |");
 
-    // Enum's like Arrays start at 0
+    //Enum defined in data.h to print out months and Dependencies column at the top of the Gantt chart
     enum month month;
     for (month = 0; month < 13; month++)
     {
