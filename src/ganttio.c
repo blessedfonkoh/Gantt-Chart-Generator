@@ -295,6 +295,13 @@ void displayGantt(Task tasks[10], int num_tasks)
     { // print each task name on a line
         printf("%2d. %-30s|", i + 1, tasks[i].name);
 
+        /* 
+        * Iterative loop for printing out colored blocks for the Gantt display.
+        * Loops from month 1 (January) to month 12 (December), 
+        * and checks the corresponding tasks start month and end month 
+        * and prints coloured blocks within that range.
+        * if the 'currentMonth' is equal to 13, the dependencies for that task are printed in place.
+        */
         for (int currentMonth = 1; currentMonth < 14; currentMonth++)
         {
 
