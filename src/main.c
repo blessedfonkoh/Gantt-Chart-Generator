@@ -58,6 +58,7 @@ int main(void)
         {
         // QUIT
         case 'q':
+            //asciiArt(); //print out ascii art!
             return 0;
         // TEST
         case 't':
