@@ -5,7 +5,8 @@
 with colored accents.*/
 
 // ANSI Escape Sequences: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
-
+// accepts one of the 256 color codes listed at the link above, and prints the
+// given text in that color
 void cprintf(int color, char *fmt, ...)
 {
     va_list args;
@@ -25,8 +26,6 @@ void printLog(char mode, char *fmt, ...)
     // tell C that the variable arguments start from fmt, the rightmost named
     // argument
     va_start(args, fmt);
-
-    // print the message
 
     switch (mode)
     {
