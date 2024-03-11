@@ -20,6 +20,8 @@ typedef struct task
     long dependencies[9];
 } Task;
 
+
+//Enum for 12 months defined and dependencies as month 13 for ease when displaying Gantt.
 enum month
 {
     january,
